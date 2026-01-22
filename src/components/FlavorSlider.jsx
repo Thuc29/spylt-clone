@@ -2,27 +2,51 @@ import React, { useRef } from 'react'
 import { flavorlists } from '../constants'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
+import { useMediaQuery } from 'react-responsive'
 
 function FlavorSlider() {
      const sliderRef = useRef(null)
+     const isTable = useMediaQuery({ query: '(max-width: 1024px)' })
      useGSAP(() => {
           const scrollAmount = sliderRef.current.scrollWidth - window.innerWidth
 
+          if (!isTable) {
+               const tl = gsap.timeline({
+                    scrollTrigger: {
+                         trigger: '.flavor-section',
+                         start: '2% top',
+                         end: `+=${scrollAmount + 1600}px`,
+                         pin: true,
+                         scrub: true,
+                    }
+               })
+               tl.to('.flavor-section', {
+                    x: `-${scrollAmount + 1600}px`,
+                    ease: 'power1.inOut',
+               })
 
-          const tl = gsap.timeline({
-               scrollTrigger: {
-                    trigger: '.flavor-section',
-                    start: '2% top',
-                    end: `+=${scrollAmount + 1600}px`,
-                    pin: true,
-                    scrub: true,
-               }
-          })
-          tl.to('.flavor-section', {
-               x: `-${scrollAmount + 1600}px`,
-               ease: 'power1.inOut',
-          })
+               const titleTl = gsap.timeline({
+                    scrollTrigger: {
+                         trigger: '.flavor-section',
+                         start: 'top top',
+                         end: 'bottom 80%',
+                         scrub: true,
+                    }
+               })
+
+               titleTl.to('.first-text-split', {
+                    xPercent: -30,
+                    ease: 'power1.inOut',
+               }).to('.flavor-text-scroll', {
+                    xPercent: -22,
+                    ease: 'power1.inOut',
+               }, "<").to('.second-text-split', {
+                    xPercent: -10,
+                    ease: 'power1.inOut',
+               }, "<")
+          }
      }, [])
+
 
      return (
           <div ref={sliderRef} className='slider-wrapper'>
